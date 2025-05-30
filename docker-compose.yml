@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    image: docker-spring-boot-postgres:latest
+    build:
+      context: .
+    container_name: spring_app
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"  # Accès à ton app Spring Boot depuis localhost:8080
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=mydb
+    ports:
+      - "5433:5432"  # Accès à la base PostgreSQL depuis localhost:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
