@@ -3,7 +3,7 @@ package com.example.application.service.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.application.controller.PasswordEncoder;
+import com.example.application.controller.PasswordEncoderProvider;
 import com.example.application.entity.Role;
 import com.example.application.entity.User;
 import com.example.application.enums.role.UserRole;
@@ -14,7 +14,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder = new PasswordEncoder();
+    private final PasswordEncoderProvider passwordEncoderProvider = new PasswordEncoderProvider();
 
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
@@ -22,12 +22,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(String email, String password, UserRole roleName) {
+    public void saveUser(String name, String email, String password, UserRole roleName) { //Use un DTO a la place
         List<Role> roles = roleRepository.findAllByName(new ArrayList<>(List.of(roleName)));
-        String hashedPassword = passwordEncoder.passwordEncoder().encode(password);
+        String hashedPassword = passwordEncoderProvider.passwordEncoder().encode(password);
         User user = User.builder()
+                .name(name)
                 .email(email)
-                .password(password)
+                .password(hashedPassword)
                 .roles(roles)
                 .build();
         userRepository.save(user);
