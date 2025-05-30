@@ -3,7 +3,7 @@ package com.example.application.service.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.application.controller.PasswordEncoderProvider;
+import com.example.application.config.PasswordEncoderProvider;
 import com.example.application.entity.Role;
 import com.example.application.entity.User;
 import com.example.application.enums.role.UserRole;
