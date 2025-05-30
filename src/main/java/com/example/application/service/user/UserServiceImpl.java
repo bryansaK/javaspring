@@ -1,11 +1,20 @@
 package com.example.application.service.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.application.controller.PasswordEncoder;
+import com.example.application.entity.Role;
+import com.example.application.entity.User;
 import com.example.application.enums.role.UserRole;
+import com.example.application.repository.role.RoleRepository;
+import com.example.application.repository.user.UserRepository;
 
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder = new PasswordEncoder();
 
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
@@ -14,8 +23,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveUser(String email, String password, UserRole roleName) {
-        Role role = roleRepository.findByName(roleName.name());
-        User user = new User(email, password, role);
+        List<Role> roles = roleRepository.findAllByName(new ArrayList<>(List.of(roleName)));
+        String hashedPassword = passwordEncoder.passwordEncoder().encode(password);
+        User user = User.builder()
+                .email(email)
+                .password(password)
+                .roles(roles)
+                .build();
         userRepository.save(user);
     }
 
@@ -36,8 +50,8 @@ public class UserServiceImpl implements UserService {
             user.setName(name);
             user.setEmail(email);
             user.setPassword(password);
-            Role role = roleRepository.findByName(roleName.name());
-            user.setRole(role);
+            List<Role> roles = roleRepository.findAllByName(new ArrayList<>(List.of(roleName)));
+            user.setRoles(roles);
             userRepository.save(user);
         }
     }
@@ -47,16 +61,4 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    @Override
-    public void saveUser(String email, String password, UserRole roleName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveUser'");
-    }
-
-    @Override
-    public void updateUser(Long id, String name, String email, String password, UserRole roleName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateUser'");
-    }
-    
 }
