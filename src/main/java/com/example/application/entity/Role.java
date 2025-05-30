@@ -3,6 +3,8 @@ package com.example.application.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.application.enums.role.UserRole;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,7 +37,7 @@ public class Role {
 
     @Column(nullable = false, unique = true, name = "name")
     @NotBlank
-    private String roleName;
+    private UserRole roleName;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
