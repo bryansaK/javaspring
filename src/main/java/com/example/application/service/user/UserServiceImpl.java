@@ -3,13 +3,17 @@ package com.example.application.service.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.example.application.config.PasswordEncoderProvider;
+import com.example.application.dto.user.UserDto;
 import com.example.application.entity.Role;
 import com.example.application.entity.User;
 import com.example.application.enums.role.UserRole;
 import com.example.application.repository.role.RoleRepository;
 import com.example.application.repository.user.UserRepository;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -22,16 +26,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(String name, String email, String password, UserRole roleName) { //Use un DTO a la place
-        List<Role> roles = roleRepository.findAllByName(new ArrayList<>(List.of(roleName)));
-        String hashedPassword = passwordEncoderProvider.passwordEncoder().encode(password);
+    public User saveUser(UserDto userDto) { //Use un DTO a la place
         User user = User.builder()
-                .name(name)
-                .email(email)
-                .password(hashedPassword)
-                .roles(roles)
+                .name(userDto.getFirstName())
+                .email(userDto.getEmail())
+                .password(passwordEncoderProvider.passwordEncoder().encode(userDto.getPassword()))
+                .roles(roleRepository.findAllByRoleNameIn(new ArrayList<>(List.of(UserRole.USER))))
                 .build();
-        userRepository.save(user);
+        User result = userRepository.save(user);
+        return result;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class UserServiceImpl implements UserService {
             user.setName(name);
             user.setEmail(email);
             user.setPassword(password);
-            List<Role> roles = roleRepository.findAllByName(new ArrayList<>(List.of(roleName)));
+            List<Role> roles = roleRepository.findAllByRoleNameIn(new ArrayList<>(List.of(roleName)));
             user.setRoles(roles);
             userRepository.save(user);
         }

@@ -9,7 +9,6 @@ import com.example.application.enums.role.UserRole;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-    List<Role> findAllByName(List<UserRole> roleName);
-
+    List<Role> findAllByRoleNameIn(List<UserRole> roleNames);
 
 }
